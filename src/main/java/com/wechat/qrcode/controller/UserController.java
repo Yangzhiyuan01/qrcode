@@ -19,19 +19,45 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    /**
+     * 企微用户信息注册
+     *
+     * @param users
+     * @return
+     */
     @PostMapping("userLogon.htm")
     @ResponseBody
-    public ResultResponse userLogon(WechatUsers users){
+    public ResultResponse userLogon(WechatUsers users) {
         ResultResponse response = new ResultResponse();
         try {
             response = userService.userLogon(users);
-        } catch (ServiceException e){
+        } catch (ServiceException e) {
             response.setMessage(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setMessage("网络异常,交易失败");
         }
         return response;
     }
 
-    //测试提交
+    /**
+     * 微信用户信息录入，领取折扣卷
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping("drawQrCode.htm")
+    @ResponseBody
+    public ResultResponse drawQrCode(WechatUsersDto dto) {
+        ResultResponse response = new ResultResponse();
+        try {
+            response = userService.drawQrCode(dto);
+        } catch (ServiceException e) {
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setMessage("网络异常,交易失败");
+        }
+        return response;
+    }
+
+
 }

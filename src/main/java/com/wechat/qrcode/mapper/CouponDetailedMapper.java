@@ -20,4 +20,12 @@ public interface CouponDetailedMapper {
      * @return
      */
     CouponDetailedDto selectByUserId(Long userId);
+
+    /**
+     * 根据用户id，更新优惠劵状态
+     *
+     * @param userId
+     * @return
+     */
+    int updateStatusByUserId(Long userId);
 }

@@ -50,6 +50,8 @@
         from wechat_users a
         left join coupon_detailed b on a.id = b.user_id
         where a.is_delete = 1 and b.is_delete = 1 and a.open_id = #{openId}
+        ORDER BY a.id DESC
+        LIMIT 1
     </select>
 
     <!--根据微信openid注册用户信息-->

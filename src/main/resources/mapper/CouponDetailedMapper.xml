@@ -22,9 +22,9 @@
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO coupon_detailed
-        (user_id, coupon_code, start_time, end_time, coupon_type, coupon_status, is_delete, create_time, update_time)
+        (user_id, coupon_code, start_time, end_time, coupon_type, coupon_status, is_delete, create_time)
         VALUES
-        (#{userId}, #{couponCode}, #{startTime}, #{endTime}, #{couponType}, #{couponStatus}, #{isDelete}, #{createTime}, #{updateTime})
+        (#{userId}, #{couponCode}, #{startTime}, #{endTime}, #{couponType}, #{couponStatus}, #{isDelete}, #{createTime})
     </insert>
 
     <select id="selectByUserId" resultMap="dtoMap">
@@ -34,5 +34,12 @@
         from coupon_detailed a
         where a.is_delete = 1 and a.user_id = #{userId}
     </select>
+
+    <!--根据用户id，更新优惠劵状态-->
+    <update id="updateStatusByUserId">
+        UPDATE coupon_detailed a
+        SET a.coupon_status = 2, a.update_time = now()
+        WHERE a.user_id = #{userId} and a.coupon_status = 1
+    </update>
 
 </mapper>

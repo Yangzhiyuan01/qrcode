@@ -8,12 +8,15 @@ import com.wechat.qrcode.mapper.CouponDetailedMapper;
 import com.wechat.qrcode.mapper.WechatUsersMapper;
 import com.wechat.qrcode.service.UserService;
 import com.wechat.qrcode.service.ex.ServiceException;
+import com.wechat.qrcode.util.DateUtil;
+import com.wechat.qrcode.util.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataUnit;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,40 +34,57 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultResponse userLogon(WechatUsers wechatUsers) {
-        if (StringUtils.isEmpty(wechatUsers.getOpenId())){
+        if (StringUtils.isEmpty(wechatUsers.getOpenId())) {
             throw new ServiceException("微信号不能为空");
         }
         ResultResponse response = new ResultResponse();
         WechatUsersDto users = wechatUsersMapper.selectCouPonByOpenId(wechatUsers);
         //如果用户信息不存在，则录入openId 账户类型为临时账户
-        if (users == null){
+        if (users == null) {
             wechatUsers.setStatus(1);
             wechatUsers.setIsDelete(1);
             wechatUsers.setCreateTime(new Date());
             wechatUsersMapper.insert(wechatUsers);
             response.setData(wechatUsers);
         } else {
-            //如果账户已存在，则展示用户注册信息及二维码信息
+            updateCoupon(users);
+            //展示用户注册信息及二维码信息
             response.setData(users);
         }
         response.setSuccess(true);
         return response;
     }
 
+    /**
+     * 在用户点击展示优惠劵时，更新优惠劵最新状态
+     *
+     * @param users
+     */
+    private void updateCoupon(WechatUsersDto users) {
+        if (users.getCouponStatus() == 1) {
+            //如果账户已存在, 判断当前优惠劵是否已经过期
+            if (users.getEndTime().getTime() - new Date().getTime() <= 0) {
+                users.setCouponStatus(2);
+                //更新优惠劵状态
+                couponDetailedMapper.updateStatusByUserId(users.getId());
+            }
+        }
+    }
+
 
     /**
-     * 企微用户信息录入，领取折扣卷
+     * 微信用户信息录入，领取折扣卷
      *
      * @param wechatUsers
      */
     @Override
-    public ResultResponse userEntry(WechatUsersDto wechatUsers) {
+    public ResultResponse drawQrCode(WechatUsersDto wechatUsers) {
         checkData(wechatUsers);
         ResultResponse response = new ResultResponse();
         WechatUsers users = wechatUsersMapper.selectByOpenId(wechatUsers);
-        if (users == null){
+        if (users == null) {
             throw new ServiceException("请先录入微信基础信息");
-        } else if (users.getStatus() != 1){
+        } else if (users.getStatus() != 1) {
             throw new ServiceException("当前微信已领取消费折扣卷，请勿重复领取");
         } else {
             //个人/团体信息完善
@@ -73,9 +93,13 @@ public class UserServiceImpl implements UserService {
             CouponDetailed detailed = new CouponDetailed();
             detailed.setUserId(wechatUsers.getId());
             detailed.setCouponCode(UUID.randomUUID().toString().replaceAll("-", ""));
-            detailed.setStartTime(new Date());
-            detailed.setEndTime(new Date());
-            //
+            detailed.setStartTime(new Date());//生效时间
+            detailed.setEndTime(DateUtil.stringToDate(DateUtils.getDays(7, true), DateUtil.YYYY_MM_DD_HH_MM_SS));//失效时间 + 7天
+            detailed.setCouponType(1);//折扣卷来源 1：码上游
+            detailed.setCouponStatus(1);//折扣卷状态 0：待生效 1：有效  2：已失效
+            detailed.setCouponStatus(1);//折扣卷状态 0：待生效 1：有效  2：已失效
+            detailed.setIsDelete(1);//是否删除,1=未删除，2=已删除
+            detailed.setCreateTime(new Date());
             couponDetailedMapper.insert(detailed);
         }
         response.setSuccess(true);
@@ -87,28 +111,27 @@ public class UserServiceImpl implements UserService {
      *
      * @param wechatUsers
      */
-    private void checkData(WechatUsersDto wechatUsers){
-        if (StringUtils.isEmpty(wechatUsers.getOpenId())){
+    private void checkData(WechatUsersDto wechatUsers) {
+        if (StringUtils.isEmpty(wechatUsers.getOpenId())) {
             throw new ServiceException("微信号不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getName())){
+        } else if (StringUtils.isEmpty(wechatUsers.getName())) {
             throw new ServiceException("姓名不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getIdCardType())){
+        } else if (StringUtils.isEmpty(wechatUsers.getIdCardType())) {
             throw new ServiceException("证件类型不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getIdCard())){
+        } else if (StringUtils.isEmpty(wechatUsers.getIdCard())) {
             throw new ServiceException("证件号码不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getPhoneNumber())){
+        } else if (StringUtils.isEmpty(wechatUsers.getPhoneNumber())) {
             throw new ServiceException("手机号不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getCode())){
+        } else if (StringUtils.isEmpty(wechatUsers.getCode())) {
             throw new ServiceException("验证码不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getStatus())){
+        } else if (StringUtils.isEmpty(wechatUsers.getStatus())) {
             //账户状态 1：临时账户 2：个人账户 3：团体账户
             throw new ServiceException("账户状态不能为空");
-        } else if (wechatUsers.getStatus() == 2){
-            if (StringUtils.isEmpty(wechatUsers.getOrganizationCode())){
+        } else if (wechatUsers.getStatus() == 2) {
+            if (StringUtils.isEmpty(wechatUsers.getOrganizationCode())) {
                 throw new ServiceException("机构代码不能为空");
             }
             //验证码校验
         }
     }
-
 }

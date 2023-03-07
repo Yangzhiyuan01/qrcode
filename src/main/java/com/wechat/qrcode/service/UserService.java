@@ -14,9 +14,9 @@ public interface UserService {
     ResultResponse userLogon(WechatUsers wechatUsers);
 
     /**
-     * 企微用户信息注册
+     * 微信用户信息录入，领取折扣卷
      *
      * @param wechatUsers
      */
-    ResultResponse userEntry(WechatUsersDto wechatUsers);
+    ResultResponse drawQrCode(WechatUsersDto wechatUsers);
 }
