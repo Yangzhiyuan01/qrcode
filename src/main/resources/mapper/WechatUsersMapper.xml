@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.qrcode.mapper.WechatUsersMapper">
+    <resultMap id="BaseResultMap" type="com.wechat.qrcode.entity.WechatUsers">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="head_url" jdbcType="VARCHAR" property="headUrl"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="id_card_type" jdbcType="INTEGER" property="idCardType"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
+        <result column="organization_code" jdbcType="VARCHAR" property="organizationCode"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="dtoMap" type="com.wechat.qrcode.entity.dto.WechatUsersDto" extends="BaseResultMap">
+        <result column="coupon_code" jdbcType="VARCHAR" property="couponCode"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="coupon_type" jdbcType="INTEGER" property="couponType"/>
+        <result column="coupon_status" jdbcType="INTEGER" property="couponStatus"/>
+        <result column="start_date" jdbcType="VARCHAR" property="stateDate"/>
+        <result column="end_date" jdbcType="VARCHAR" property="endDate"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO wechat_users
+        (open_id, nickname, head_url, name, id_card_type, id_card, phone_number, organization_code, status, is_delete, create_time, update_time)
+        VALUES
+        (#{openId}, #{nickname}, #{headUrl}, #{name}, #{idCardType}, #{idCard}, #{phoneNumber}, #{organizationCode}, #{status}, #{isDelete}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="selectByOpenId" resultMap="BaseResultMap">
+        select *
+        from wechat_users a
+        where a.is_delete = 1 and a.open_id = #{openId}
+    </select>
+
+    <select id="selectCouPonByOpenId" resultMap="dtoMap">
+        select a.*, b.coupon_code, b.start_time, b.end_time, b.coupon_type, b.coupon_status,
+        DATE_FORMAT(b.start_time, '%y年%m月%d日%H:%i:%s') as state_date,
+        DATE_FORMAT(b.end_time, '%y年%m月%d日%H:%i:%s') as end_date
+        from wechat_users a
+        left join coupon_detailed b on a.id = b.user_id
+        where a.is_delete = 1 and b.is_delete = 1 and a.open_id = #{openId}
+    </select>
+
+    <!--根据微信openid注册用户信息-->
+    <update id="updateByOpenId">
+        update wechat_users
+        set name = #{name}, id_card_type = #{idCardType}, id_card = #{idCard}, phone_number = #{phoneNumber},
+        organization_code = #{organizationCode}, status = #{status}, update_time = #{updateTime}
+        where open_id = #{openId}
+    </update>
+</mapper>
