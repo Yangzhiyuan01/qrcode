@@ -34,7 +34,7 @@ public class WechatUsersDto extends WechatUsers {
     /**
      * 生效日期
      */
-    private String stateDate;
+    private String startDate;
 
     /**
      * 失效日期
@@ -86,12 +86,12 @@ public class WechatUsersDto extends WechatUsers {
         this.couponStatus = couponStatus;
     }
 
-    public String getStateDate() {
-        return stateDate;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setStateDate(String stateDate) {
-        this.stateDate = stateDate;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
     public String getEndDate() {

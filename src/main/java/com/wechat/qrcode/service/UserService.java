@@ -7,6 +7,14 @@ import com.wechat.qrcode.entity.dto.WechatUsersDto;
 public interface UserService {
 
     /**
+     * 小程序消息订阅时获取openId
+     *
+     * @param code
+     * @return
+     */
+    ResultResponse getWxOpenid(String code);
+
+    /**
      * 企微用户信息注册
      *
      * @param wechatUsers

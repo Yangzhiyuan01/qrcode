@@ -20,7 +20,27 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 企微用户信息注册
+     * 小程序消息订阅时获取openId
+     *
+     * @param code
+     * @return
+     */
+    @PostMapping("getWxOpenid.htm")
+    @ResponseBody
+    public ResultResponse getWxOpenid(String code) {
+        ResultResponse response = new ResultResponse();
+        try {
+            response = userService.getWxOpenid(code);
+        } catch (ServiceException e) {
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setMessage("网络异常,交易失败");
+        }
+        return response;
+    }
+
+    /**
+     * 根据微信号获取用户信息
      *
      * @param users
      * @return

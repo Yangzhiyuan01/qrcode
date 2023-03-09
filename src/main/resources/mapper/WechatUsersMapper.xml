@@ -25,7 +25,7 @@
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
         <result column="coupon_type" jdbcType="INTEGER" property="couponType"/>
         <result column="coupon_status" jdbcType="INTEGER" property="couponStatus"/>
-        <result column="start_date" jdbcType="VARCHAR" property="stateDate"/>
+        <result column="start_date" jdbcType="VARCHAR" property="startDate"/>
         <result column="end_date" jdbcType="VARCHAR" property="endDate"/>
     </resultMap>
 
@@ -45,11 +45,11 @@
 
     <select id="selectCouPonByOpenId" resultMap="dtoMap">
         select a.*, b.coupon_code, b.start_time, b.end_time, b.coupon_type, b.coupon_status,
-        DATE_FORMAT(b.start_time, '%y年%m月%d日%H:%i:%s') as state_date,
+        DATE_FORMAT(b.start_time, '%y年%m月%d日%H:%i:%s') as start_date,
         DATE_FORMAT(b.end_time, '%y年%m月%d日%H:%i:%s') as end_date
         from wechat_users a
-        left join coupon_detailed b on a.id = b.user_id
-        where a.is_delete = 1 and b.is_delete = 1 and a.open_id = #{openId}
+        left join coupon_detailed b on a.id = b.user_id and b.is_delete = 1
+        where a.is_delete = 1 and a.open_id = #{openId}
         ORDER BY a.id DESC
         LIMIT 1
     </select>
