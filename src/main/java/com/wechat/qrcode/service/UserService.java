@@ -2,6 +2,7 @@ package com.wechat.qrcode.service;
 
 import com.wechat.qrcode.entity.ResultResponse;
 import com.wechat.qrcode.entity.WechatUsers;
+import com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto;
 import com.wechat.qrcode.entity.dto.WechatUsersDto;
 
 public interface UserService {
@@ -27,4 +28,11 @@ public interface UserService {
      * @param wechatUsers
      */
     ResultResponse drawQrCode(WechatUsersDto wechatUsers);
+
+    /**
+     * 获取机构列表
+     *
+     * @param wechatUsers
+     */
+    ResultResponse selectOrganizationList(CompanyOrganizationInfoDto wechatUsers);
 }

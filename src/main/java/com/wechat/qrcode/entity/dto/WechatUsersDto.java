@@ -42,6 +42,16 @@ public class WechatUsersDto extends WechatUsers {
     private String endDate;
 
     /**
+     * 机构名称
+     */
+    private String organizationName;
+
+    /**
+     * 门票预订人数
+     */
+    private Integer bookingNumber;
+
+    /**
      * 验证码
      */
     private String code;
@@ -108,5 +118,21 @@ public class WechatUsersDto extends WechatUsers {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public Integer getBookingNumber() {
+        return bookingNumber;
+    }
+
+    public void setBookingNumber(Integer bookingNumber) {
+        this.bookingNumber = bookingNumber;
     }
 }

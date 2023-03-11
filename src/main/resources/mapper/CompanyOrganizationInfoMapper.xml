@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.qrcode.mapper.CompanyOrganizationInfoMapper">
+    <resultMap id="BaseResultMap" type="com.wechat.qrcode.entity.CompanyOrganizationInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="organization_code" jdbcType="VARCHAR" property="organizationCode"/>
+        <result column="organization_name" jdbcType="VARCHAR" property="organizationName"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="dtoMap" type="com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto" extends="BaseResultMap">
+
+    </resultMap>
+
+    <!--获取企业机构信息-->
+    <select id="selectOrganizationInfoList" resultMap="dtoMap">
+        SELECT *
+        FROM company_organization_info a
+        WHERE a.is_delete = 1
+    </select>
+
+    <!--获取企业机构信息-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT *
+        FROM company_organization_info a
+        WHERE a.is_delete = 1 and a.id = #{id}
+    </select>
+</mapper>

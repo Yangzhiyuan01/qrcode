@@ -1,10 +1,13 @@
 package com.wechat.qrcode.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wechat.qrcode.entity.CompanyOrganizationInfo;
 import com.wechat.qrcode.entity.CouponDetailed;
 import com.wechat.qrcode.entity.ResultResponse;
 import com.wechat.qrcode.entity.WechatUsers;
+import com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto;
 import com.wechat.qrcode.entity.dto.WechatUsersDto;
+import com.wechat.qrcode.mapper.CompanyOrganizationInfoMapper;
 import com.wechat.qrcode.mapper.CouponDetailedMapper;
 import com.wechat.qrcode.mapper.WechatUsersMapper;
 import com.wechat.qrcode.service.UserService;
@@ -16,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+
 import javax.annotation.Resource;
 import java.beans.Transient;
 import java.util.Date;
@@ -33,6 +37,9 @@ public class UserServiceImpl implements UserService {
     @Resource
     private CouponDetailedMapper couponDetailedMapper;
 
+    @Resource
+    private CompanyOrganizationInfoMapper companyOrganizationInfoMapper;
+
 
     /**
      * 小程序消息订阅时获取openId
@@ -41,7 +48,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public ResultResponse getWxOpenid(String code) {
-        if(StringUtils.isEmpty(code)){
+        if (StringUtils.isEmpty(code)) {
             throw new ServiceException("微信code不能为空");
         }
 
@@ -106,8 +113,8 @@ public class UserServiceImpl implements UserService {
         if (users.getCouponStatus() != null && users.getCouponStatus() == 1) {
             //如果账户已存在, 判断当前优惠劵是否已经过期
             if (users.getEndTime().getTime() - new Date().getTime() <= 0) {
-                users.setCouponStatus(2);
                 //更新优惠劵状态
+                users.setCouponStatus(2);
                 couponDetailedMapper.updateStatusByUserId(users.getId());
             }
         }
@@ -126,7 +133,7 @@ public class UserServiceImpl implements UserService {
         WechatUsersDto users = wechatUsersMapper.selectCouPonByOpenId(wechatUsers);
         if (users == null) {
             throw new ServiceException("请先录入微信基础信息");
-        } else if (users.getCouponStatus() == 1) {
+        } else if (users.getCouponStatus() != null && users.getCouponStatus() == 1) {
             throw new ServiceException("当前微信已领取消费折扣卷，请勿重复领取");
         } else {
             //个人/团体信息完善
@@ -139,12 +146,13 @@ public class UserServiceImpl implements UserService {
             detailed.setEndTime(DateUtil.stringToTime(DateUtils.getDays(7, true), DateUtil.YYYY_MM_DD_HH_MM_SS));//失效时间 + 7天
             detailed.setCouponType(1);//折扣卷来源 1：码上游
             detailed.setCouponStatus(1);//折扣卷状态 0：待生效 1：有效  2：已失效
-            detailed.setCouponStatus(1);//折扣卷状态 0：待生效 1：有效  2：已失效
+            detailed.setBookingNumber(wechatUsers.getBookingNumber());//预订人数
             detailed.setIsDelete(1);//是否删除,1=未删除，2=已删除
             detailed.setCreateTime(new Date());
             int i = couponDetailedMapper.insert(detailed);
             if (i > 0) {
                 response.setSuccess(true);
+                response.setMessage("领取成功");
                 return response;
             } else {
                 LOGGER.error("优惠卷生成失败, 插入数据库失败；");
@@ -162,12 +170,6 @@ public class UserServiceImpl implements UserService {
     private void checkData(WechatUsersDto wechatUsers) {
         if (StringUtils.isEmpty(wechatUsers.getOpenId())) {
             throw new ServiceException("微信号不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getName())) {
-            throw new ServiceException("姓名不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getIdCardType())) {
-            throw new ServiceException("证件类型不能为空");
-        } else if (StringUtils.isEmpty(wechatUsers.getIdCard())) {
-            throw new ServiceException("证件号码不能为空");
         } else if (StringUtils.isEmpty(wechatUsers.getPhoneNumber())) {
             throw new ServiceException("手机号不能为空");
         } else if (StringUtils.isEmpty(wechatUsers.getCode())) {
@@ -175,11 +177,42 @@ public class UserServiceImpl implements UserService {
         } else if (StringUtils.isEmpty(wechatUsers.getStatus())) {
             //账户状态 1：临时账户 2：个人账户 3：团体账户
             throw new ServiceException("账户状态不能为空");
-        } else if (wechatUsers.getStatus() == 3) {
-            if (StringUtils.isEmpty(wechatUsers.getOrganizationCode())) {
-                throw new ServiceException("机构代码不能为空");
+        } else if (wechatUsers.getStatus() == 2) {
+            if (StringUtils.isEmpty(wechatUsers.getName())) {
+                throw new ServiceException("姓名不能为空");
+            } else if (StringUtils.isEmpty(wechatUsers.getIdCardType())) {
+                throw new ServiceException("证件类型不能为空");
+            } else if (StringUtils.isEmpty(wechatUsers.getIdCard())) {
+                throw new ServiceException("证件号码不能为空");
             }
-            //验证码校验
+        } else if (wechatUsers.getStatus() == 3) {
+            if (wechatUsers.getOrganizationId() == null) {
+                throw new ServiceException("机构代码编号不能为空");
+            } else if (StringUtils.isEmpty(wechatUsers.getBookingNumber())){
+                throw new ServiceException("预订人数不能为空");
+            } else if (wechatUsers.getBookingNumber() < 15){
+                throw new ServiceException("预订人数低于15人");
+            }
+            CompanyOrganizationInfo organizationInfo = companyOrganizationInfoMapper.selectById(wechatUsers.getOrganizationId());
+            if (organizationInfo == null) {
+                throw new ServiceException("未获取到机构信息，请重新操作");
+            }
+        } else {
+            throw new ServiceException("账户状态异常，请联系管理员");
         }
+    }
+
+    /**
+     * 获取机构列表
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResultResponse selectOrganizationList(CompanyOrganizationInfoDto dto) {
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setData(companyOrganizationInfoMapper.selectOrganizationInfoList(dto));
+        resultResponse.setSuccess(true);
+        return resultResponse;
     }
 }

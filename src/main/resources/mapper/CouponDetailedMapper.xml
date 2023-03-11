@@ -13,6 +13,7 @@
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="booking_number" jdbcType="INTEGER" property="bookingNumber"/>
     </resultMap>
 
     <resultMap id="dtoMap" type="com.wechat.qrcode.entity.dto.CouponDetailedDto" extends="BaseResultMap">
@@ -22,9 +23,9 @@
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO coupon_detailed
-        (user_id, coupon_code, start_time, end_time, coupon_type, coupon_status, is_delete, create_time)
+        (user_id, coupon_code, start_time, end_time, coupon_type, coupon_status, is_delete, create_time, booking_number)
         VALUES
-        (#{userId}, #{couponCode}, #{startTime}, #{endTime}, #{couponType}, #{couponStatus}, #{isDelete}, #{createTime})
+        (#{userId}, #{couponCode}, #{startTime}, #{endTime}, #{couponType}, #{couponStatus}, #{isDelete}, #{createTime}, #{bookingNumber})
     </insert>
 
     <select id="selectByUserId" resultMap="dtoMap">

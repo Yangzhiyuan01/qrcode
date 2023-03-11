@@ -47,9 +47,9 @@ public class WechatUsers implements Serializable {
     private String phoneNumber;
 
     /**
-     * 机构代码
+     * 机构代码iD
      */
-    private String organizationCode;
+    private Long organizationId;
 
     /**
      * 账户状态 1：临时账户 2：个人账户 3：团体账户
@@ -135,12 +135,12 @@ public class WechatUsers implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getOrganizationCode() {
-        return organizationCode;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganizationCode(String organizationCode) {
-        this.organizationCode = organizationCode;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public Integer getStatus() {

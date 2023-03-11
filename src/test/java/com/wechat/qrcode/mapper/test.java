@@ -34,7 +34,7 @@ public class test {
         wechatUsers.setIdCardType(1);
         wechatUsers.setIdCard("430322115877845521");
         wechatUsers.setPhoneNumber("18621198878");
-        wechatUsers.setOrganizationCode(null);
+        wechatUsers.setOrganizationId(2L);
         wechatUsers.setStatus(1);
         wechatUsers.setIsDelete(1);
         wechatUsers.setCreateTime(new Date());

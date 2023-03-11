@@ -12,7 +12,7 @@
         <result column="id_card_type" jdbcType="INTEGER" property="idCardType"/>
         <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
         <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
-        <result column="organization_code" jdbcType="VARCHAR" property="organizationCode"/>
+        <result column="organization_id" jdbcType="VARCHAR" property="organizationId"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -27,14 +27,16 @@
         <result column="coupon_status" jdbcType="INTEGER" property="couponStatus"/>
         <result column="start_date" jdbcType="VARCHAR" property="startDate"/>
         <result column="end_date" jdbcType="VARCHAR" property="endDate"/>
+        <result column="organization_name" jdbcType="VARCHAR" property="organizationName"/>
+        <result column="booking_number" jdbcType="INTEGER" property="bookingNumber"/>
     </resultMap>
 
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO wechat_users
-        (open_id, nickname, head_url, name, id_card_type, id_card, phone_number, organization_code, status, is_delete, create_time, update_time)
+        (open_id, nickname, head_url, name, id_card_type, id_card, phone_number, organization_id, status, is_delete, create_time, update_time)
         VALUES
-        (#{openId}, #{nickname}, #{headUrl}, #{name}, #{idCardType}, #{idCard}, #{phoneNumber}, #{organizationCode}, #{status}, #{isDelete}, #{createTime}, #{updateTime})
+        (#{openId}, #{nickname}, #{headUrl}, #{name}, #{idCardType}, #{idCard}, #{phoneNumber}, #{organizationId}, #{status}, #{isDelete}, #{createTime}, #{updateTime})
     </insert>
 
     <select id="selectByOpenId" resultMap="BaseResultMap">
@@ -44,11 +46,14 @@
     </select>
 
     <select id="selectCouPonByOpenId" resultMap="dtoMap">
-        select a.*, b.coupon_code, b.start_time, b.end_time, b.coupon_type, b.coupon_status,
-        DATE_FORMAT(b.start_time, '%y年%m月%d日%H:%i:%s') as start_date,
-        DATE_FORMAT(b.end_time, '%y年%m月%d日%H:%i:%s') as end_date
+        select a.*,
+            b.coupon_code, b.start_time, b.end_time, b.coupon_type, b.coupon_status, b.booking_number,
+            DATE_FORMAT(b.start_time, '%y年%m月%d日%H:%i:%s') as start_date,
+            DATE_FORMAT(b.end_time, '%y年%m月%d日%H:%i:%s') as end_date,
+            c.organization_name
         from wechat_users a
         left join coupon_detailed b on a.id = b.user_id and b.is_delete = 1
+        LEFT JOIN company_organization_info c on a.organization_id = c.id and c.is_delete = 1
         where a.is_delete = 1 and a.open_id = #{openId}
         ORDER BY a.id DESC
         LIMIT 1
@@ -58,7 +63,7 @@
     <update id="updateByOpenId">
         update wechat_users
         set name = #{name}, id_card_type = #{idCardType}, id_card = #{idCard}, phone_number = #{phoneNumber},
-        organization_code = #{organizationCode}, status = #{status}, update_time = #{updateTime}
+        organization_id = #{organizationId}, status = #{status}, update_time = #{updateTime}
         where open_id = #{openId}
     </update>
 </mapper>

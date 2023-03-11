@@ -55,6 +55,11 @@ public class CouponDetailed implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 门票预订人数
+     */
+    private Integer bookingNumber;
+
     public Long getId() {
         return id;
     }
@@ -133,5 +138,13 @@ public class CouponDetailed implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getBookingNumber() {
+        return bookingNumber;
+    }
+
+    public void setBookingNumber(Integer bookingNumber) {
+        this.bookingNumber = bookingNumber;
     }
 }
