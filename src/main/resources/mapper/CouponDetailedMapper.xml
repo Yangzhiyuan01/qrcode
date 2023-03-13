@@ -14,6 +14,8 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="booking_number" jdbcType="INTEGER" property="bookingNumber"/>
+        <result column="consume_voucher_url" jdbcType="VARCHAR" property="consumeVoucherUrl"/>
+        <result column="upload_time" jdbcType="TIMESTAMP" property="uploadTime"/>
     </resultMap>
 
     <resultMap id="dtoMap" type="com.wechat.qrcode.entity.dto.CouponDetailedDto" extends="BaseResultMap">
@@ -41,6 +43,13 @@
         UPDATE coupon_detailed a
         SET a.coupon_status = 2, a.update_time = now()
         WHERE a.user_id = #{userId} and a.coupon_status = 1
+    </update>
+
+    <!--根据id更新消费凭证信息-->
+    <update id="updateConsumeVoucherUrlById">
+        UPDATE coupon_detailed a
+        SET a.consume_voucher_url = #{consumeVoucherUrl}, a.upload_time = now()
+        WHERE a.id = #{id}
     </update>
 
 </mapper>

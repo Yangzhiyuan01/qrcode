@@ -6,6 +6,7 @@ import com.wechat.qrcode.entity.CouponDetailed;
 import com.wechat.qrcode.entity.ResultResponse;
 import com.wechat.qrcode.entity.WechatUsers;
 import com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto;
+import com.wechat.qrcode.entity.dto.CouponDetailedDto;
 import com.wechat.qrcode.entity.dto.WechatUsersDto;
 import com.wechat.qrcode.mapper.CompanyOrganizationInfoMapper;
 import com.wechat.qrcode.mapper.CouponDetailedMapper;
@@ -53,8 +54,8 @@ public class UserServiceImpl implements UserService {
         }
 
         HashMap<String, String> params = new HashMap<>();
-        params.put("appid", "");//小程序appid
-        params.put("secret", "");//小程序秘钥
+        params.put("appid", "wx25956a8d127924b7");//小程序appid
+        params.put("secret", "21e3d158a8e0ad778d49c873be8e031c");//小程序秘钥
         params.put("code", code);
         params.put("grant_type", "authorization_code");
         String host = "https://api.weixin.qq.com/sns/oauth2/access_token";//小程序接口地址
@@ -215,4 +216,45 @@ public class UserServiceImpl implements UserService {
         resultResponse.setSuccess(true);
         return resultResponse;
     }
+
+    /**
+     * 更新消费凭证信息
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResultResponse updateConsumeVoucherUrl(CouponDetailedDto dto) {
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ServiceException("id不能为空");
+        } else if (StringUtils.isEmpty(dto.getConsumeVoucherUrl())) {
+            throw new ServiceException("消费凭证地址不能为空");
+        }
+        ResultResponse resultResponse = new ResultResponse();
+        int i = couponDetailedMapper.updateConsumeVoucherUrlById(dto);
+        if (i > 0) {
+            resultResponse.setData("上传成功");
+            resultResponse.setSuccess(true);
+        } else {
+            throw new ServiceException("上传失败");
+        }
+        return resultResponse;
+    }
+
+    /**
+     * 发送短信验证码
+     *
+     * @param usersDto
+     * @return
+     */
+    @Override
+    public ResultResponse sendMsg(WechatUsersDto usersDto) {
+        if (StringUtils.isEmpty(usersDto.getPhoneNumber())) {
+            throw new ServiceException("电话号码不能为空");
+        }
+        ResultResponse resultResponse = new ResultResponse();
+
+        return resultResponse;
+    }
+
 }

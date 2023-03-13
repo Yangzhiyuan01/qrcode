@@ -28,4 +28,12 @@ public interface CouponDetailedMapper {
      * @return
      */
     int updateStatusByUserId(Long userId);
+
+    /**
+     * 根据id更新消费凭证信息
+     *
+     * @param dto
+     * @return
+     */
+    int updateConsumeVoucherUrlById(CouponDetailedDto dto);
 }

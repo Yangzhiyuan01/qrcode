@@ -60,6 +60,16 @@ public class CouponDetailed implements Serializable {
      */
     private Integer bookingNumber;
 
+    /**
+     * 消费凭证url
+     */
+    private String consumeVoucherUrl;
+
+    /**
+     * 消费凭证上传时间
+     */
+    private Date uploadTime;
+
     public Long getId() {
         return id;
     }
@@ -146,5 +156,21 @@ public class CouponDetailed implements Serializable {
 
     public void setBookingNumber(Integer bookingNumber) {
         this.bookingNumber = bookingNumber;
+    }
+
+    public String getConsumeVoucherUrl() {
+        return consumeVoucherUrl;
+    }
+
+    public void setConsumeVoucherUrl(String consumeVoucherUrl) {
+        this.consumeVoucherUrl = consumeVoucherUrl;
+    }
+
+    public Date getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(Date uploadTime) {
+        this.uploadTime = uploadTime;
     }
 }

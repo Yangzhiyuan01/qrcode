@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wechat.qrcode.entity.ResultResponse;
 import com.wechat.qrcode.entity.WechatUsers;
 import com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto;
+import com.wechat.qrcode.entity.dto.CouponDetailedDto;
 import com.wechat.qrcode.entity.dto.WechatUsersDto;
 import com.wechat.qrcode.service.UserService;
 import com.wechat.qrcode.service.ex.ServiceException;
@@ -183,5 +184,45 @@ public class UserController {
         return response;
     }
 
+    /**
+     * 更新消费凭证信息
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping("updateConsumeVoucherUrl.htm")
+    @ResponseBody
+    public ResultResponse updateConsumeVoucherUrl(CouponDetailedDto dto) {
+        ResultResponse response = new ResultResponse();
+        try {
+            response = userService.updateConsumeVoucherUrl(dto);
+        } catch (ServiceException e) {
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setMessage("网络异常,交易失败");
+        }
+        return response;
+    }
+
+
+    /**
+     * 发送短信验证码
+     *
+     * @param usersDto
+     * @return
+     */
+    @PostMapping("sendMsg.htm")
+    @ResponseBody
+    public ResultResponse sendMsg(WechatUsersDto usersDto) {
+        ResultResponse response = new ResultResponse();
+        try {
+            response = userService.sendMsg(usersDto);
+        } catch (ServiceException e) {
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setMessage("网络异常,交易失败");
+        }
+        return response;
+    }
 
 }

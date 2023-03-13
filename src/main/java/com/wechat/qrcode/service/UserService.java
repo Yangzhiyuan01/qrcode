@@ -3,6 +3,7 @@ package com.wechat.qrcode.service;
 import com.wechat.qrcode.entity.ResultResponse;
 import com.wechat.qrcode.entity.WechatUsers;
 import com.wechat.qrcode.entity.dto.CompanyOrganizationInfoDto;
+import com.wechat.qrcode.entity.dto.CouponDetailedDto;
 import com.wechat.qrcode.entity.dto.WechatUsersDto;
 
 public interface UserService {
@@ -35,4 +36,19 @@ public interface UserService {
      * @param wechatUsers
      */
     ResultResponse selectOrganizationList(CompanyOrganizationInfoDto wechatUsers);
+
+    /**
+     * 更新消费凭证信息
+     *
+     * @param dto
+     */
+    ResultResponse updateConsumeVoucherUrl(CouponDetailedDto dto);
+
+    /**
+     * 发送短信验证码
+     *
+     * @param usersDto
+     * @return
+     */
+    ResultResponse sendMsg(WechatUsersDto usersDto);
 }
