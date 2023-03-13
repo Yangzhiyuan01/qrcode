@@ -1,15 +1,17 @@
 package com.wechat.qrcode.mapper;
 
-import com.mysql.cj.util.DataTypeUtil;
 import com.wechat.qrcode.entity.CouponDetailed;
 import com.wechat.qrcode.entity.WechatUsers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.unit.DataUnit;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Date;
 
 //@SpringBootTest:表示标注当前的类是个测试类，不会随同项目一块打包发送
@@ -55,5 +57,20 @@ public class test {
         wechatUsers.setCreateTime(new Date());
         int i = couponDetailedMapper.insert(wechatUsers);
         System.out.println(i);
+    }
+
+    @Test
+    public void test(){
+        try {
+            File file = new File("C:\\Users\\Administrator\\Pictures\\狗子.jpg");
+            FileInputStream fileInputStream = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile(file.getName(), file.getName(),
+                    "text/plain", fileInputStream);
+            String host = "http://localhost:8888/users/uploadVoucher.htm";
+            //String result = restTemplate.postForObject(host, multipartFile, String.class);
+            //System.out.println(result);
+        } catch (Exception e){
+
+        }
     }
 }
